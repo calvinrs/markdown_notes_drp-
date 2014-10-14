@@ -1,4 +1,4 @@
-RW SVJD - Validation Requirements
+RW SVJD - Validation Current Runs
 =================================
 
 Runs
@@ -49,24 +49,67 @@ In outfile 2:
 
 We then calculate:
 	
-	+ For each equity asset:
-		+ For all output timesteps (months [12,24,36,48,60,72,84,96,108,120,348,359,360])
-			+ Return the standard deviation of the log of the XS returns / Sqrt(Time in years) *Annualised Vol?*
-		+ For timesteps [12, 360]
-			+ Return the correlation between the standard deviation of the log of the XS returns
-				+ These are labelled 1y [12] and Unconditional [360]  
-		+ For month [12] (or "1y")
-			+ Calculate Percentiles at N = {**some pretty granular range, around 0.01 ticks**}
-			+ Percentiles of the *change* in XS Total Return (*XS Total Return[i]*)
-		+ For month [360] (or "unconditional")
-			+ Calculate Percentiles at N = {**some less granular range, around 0.1 ticks**}
-			+ Percentiles of the *change* in XS Total Return (*XS Total Return[360] / XS Total Return [359]*)
+For each equity asset:
++ For all output timesteps (months [12,24,36,48,60,72,84,96,108,120,348,359,360])
+	+ Return the standard deviation of the log of the XS returns / Sqrt(Time in years) *Annualised Vol?*
++ For months [12, 360]
+	+ Return the correlation between the standard deviation of the log of the XS returns
+		+ These are labelled 1y [12] and Unconditional [360]  
++ For month [12] (or "1y")
+	+ Calculate Percentiles at N = {**some pretty granular range, around 0.01 ticks**}
+		+ Percentiles of the *change* in XS Total Return (*XS Total Return[i]*)
+	+ Append "Mean" and "Volatility" values to the percentiles
+		+ "Mean" is the average return given by the the *change* in XS Total Return (*XS Total Return[i]*)
+		+ "Volatility" is the Standard Deviation of the *log change* in XS Total Return (*ln(XS Total Return[i])*)
++ For month [360] (or "unconditional")
+	+ Calculate Percentiles at N = {**some less granular range, around 0.1 ticks**}
+		+ Percentiles of the *change* in XS Total Return (*XS Total Return[360] / XS Total Return [359]*)
+	+ Append "Mean" and "Volatility" values to the percentiles
+		+ "Mean" is the average return given by the the *change* in XS Total Return (*XS Total Return[360] / XS Total Return [359]*)
+		+ "Volatility" is the Standard Deviation of the *log change* in XS Total Return (*ln(XS Total Return[360] / XS Total Return [359])*)
 		
 Validation 2
 ------------
 
+The theme of this run is to calculate the **Short Term Validation Statistics**
+
 We run the ESG over 12 monthly steps, for a 1y horizon. We use 20,000 trials in this run. Seed = 123.  
 
-Outputs are **Identical** to the first validation.
+Output files created are **Identical** to the first validation.
 
+> Flashback - this validation was originally one single run, but memory issues occurred when the number of equity assets increased, so we had to split the runs.
 
+Calculate, for each equity asset:
++ At month[1], calculate:
+	+ Mean - average of the *log* of the XS Total Return Index
+	+ Volatility - standard deviation of the log of the XS return index / Sqrt(Time in years)
+	+ Skew - Skew of the log of the XS return index 
+	+ Kurtosis - Kurtosis of the log of the XS return index 
+	+ 99.5 Percentile - Percentile of the *log change* in XS Total Return
+	+ Standard Error at the 99.5 percentile
++ At month[12], calculate:
+	+ Mean - average of the *log* of the XS Total Return Index
+	+ Volatility - standard deviation of the log of the XS return index / Sqrt(Time in years)
+	+ Skew - Skew of the log of the XS return index 
+	+ Kurtosis - Kurtosis of the log of the XS return index 
+	+ 99.5 Percentile - Percentile of the log of the XS return index 
+	+ Standard Error at the 99.5 percentile
+	+ Calculate the tail correlations between the percentiles at [95%, 99% 99.5%]
+		+ Percentiles of the *change* in XS Total Return (*XS Total Return[12] / XS Total Return [11]*)
+		+ Tail correlation is a normalised(?) count of the observed values outside of the percentiles chosen  
+		
+Validation 3
+------------
+
+The theme of this run is to get the one-month Unconditional Skew and Kurtosis of equity returns.
+
+We run the ESG over 1 monthly step, for a 1m horizon. We use 5,000 trials in this run. Seed = 123.  
+
+Again, output files created are **Identical** to the first validation.  
+
+Calculate, for each equity asset:
++ At month[1], calculate:
+	+ Skew - Skew of the log of the XS return index
+	+ Kurtosis - Kurtosis of the log of the XS return index
+	
+> Is there any difference in these values and the 1m values calculated in run 2, other than the number of trials?
