@@ -22,18 +22,17 @@ Factors 2-6 are left at their default values - these rarely change.
 
 We set up a ParentEquityAsset for each of the Equity Assets we have calibrated. These use the default asset as the base economy.
 
-
-
-Validation 1
-------------
-
-We run the ESG over 360 monthly steps, for a 30y horizon. We use 20,000 trials in this run. Seed = 123.  
-
+The calibrations entered into the simulation files are identical for each run.  
 
 We calibrate, for each ParentEquityAsset:
 
 + The factor loadings
 + The SVJD Volatility - only MeanReversionLevel and Initial Value are set.
+
+Validation 1
+------------
+
+We run the ESG over 360 monthly steps, for a 30y horizon. We use 20,000 trials in this run. Seed = 123.  
 
 We output:
 
